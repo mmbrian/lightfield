@@ -68,7 +68,8 @@ def renderView():
             sptp = getST(rc, x_separating, y_separating)
             # Intersect r with F to get (f, g)_F
             fgz = rayPlaneIntersection(r, f0, np.array((0, 0, 1)))
-            
+            for st in getCamerasWithinSTrange(sptp[0], sptp[1], delta, n_horizontal_views, n_vertical_views):
+                s, t = st[0], st[1]
 
 
 def main():

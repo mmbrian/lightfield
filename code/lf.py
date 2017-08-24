@@ -8,6 +8,7 @@ from __future__ import division
 
 from geom import PinholeCamera, rayPlaneIntersection
 import numpy as np
+from math import ceil, floor
 
 tl_cam_offset = np.array((0, 0, 0)) # top left offset position of C
 # Camera surface C is parallel to xy plane and this offset locates the
@@ -34,6 +35,17 @@ def getST(p, xs, ys):
     t = dy / ys
     return (s, t)
 
+def getCamerasWithinSTrange(s, t, delta, n_horizontal_views, n_vertical_views):
+    min_s, max_s = int(ceil(s-delta/2)), int(floor(s+delta/2))
+    min_t, max_t = int(ceil(t-delta/2)), int(floor(t+delta/2))
+    out_st = []
+    for s in xrange(min_s, max_s+1):
+        for t in xrange(min_t, max_t+1):
+            # Check if s,t is a valid data camera in the camera array
+            if s>=0 and t>=0 and s<n_horizontal_views and t<n_vertical_views:
+               out_st.append((s, t))
+    return out_st
+
 def createCameraSurfaceC(n_horizontal_views, n_vertical_views, f, xs, ys):
     '''
     f  is focal length on each camera on the grid
@@ -45,9 +57,9 @@ def createCameraSurfaceC(n_horizontal_views, n_vertical_views, f, xs, ys):
           for i in xrange(n_vertical_views)]
     for t in xrange(n_vertical_views): # each row
         for s in xrange(n_horizontal_views): # each column
-            t = tl_cam_offset + np.array((s*xs, t*ys, 0)) # translation from (0, 0, 0)
+            _t = tl_cam_offset + np.array((s*xs, t*ys, 0)) # translation from (0, 0, 0)
             # initializing with default parameters (sensor size and camera resolution)
-            C[t][s] = PinholeCamera('view%d-%d' % (t, s), f = f, t = t)
+            C[t][s] = PinholeCamera('view%d-%d' % (t, s), f = f, t = _t)
     return C
 
 def createCameraK(c, f, sw, sh, xres, yres):

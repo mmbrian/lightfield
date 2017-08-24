@@ -146,7 +146,6 @@ class PinholeCamera:
     def computeFOV(self, sw, sh):
         self.sw = sw
         self.sh = sh
-        print type(self)
         self.hfov = 2 * atan2(sw/2, self.f)
         self.vfov = 2 * atan2(sh/2, self.f)
         # 2 x f x tan(hfov/2) should give sw
